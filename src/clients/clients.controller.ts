@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, HttpCode, HttpStatus, Body, Patch, Param, Delete } from '@nestjs/common';
 import { ClientsService } from './clients.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
@@ -7,6 +7,12 @@ import { UpdateClientDto } from './dto/update-client.dto';
 export class ClientsController {
   constructor(private readonly clientsService: ClientsService) { }
 
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  create(@Body() createClientDto: CreateClientDto) {
+    return this.clientsService.create(createClientDto);
+  }
+
   @Get()
   findAll() {
     return this.clientsService.findAll();
@@ -14,6 +20,6 @@ export class ClientsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.clientsService.findOne(+id);
+    return this.clientsService.findOne(id);
   }
 }
