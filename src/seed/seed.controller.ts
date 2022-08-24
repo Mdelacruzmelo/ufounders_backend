@@ -9,4 +9,9 @@ export class SeedController {
   seedDatabase() {
     return this.seedService.seedDatabase();
   }
+
+  @Delete()
+  truncateDatabase() {
+    return this.seedService.truncateDatabase();
+  }
 }

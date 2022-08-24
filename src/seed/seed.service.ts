@@ -35,4 +35,12 @@ export class SeedService {
 
   }
 
+  async truncateDatabase() {
+
+    // Clean table after i get the data
+    await this.clientModel.deleteMany()
+
+    return `Database truncated successfully`
+  }
+
 }
