@@ -14,6 +14,9 @@ import { Client, ClientSchema } from './entities/client.entity';
         schema: ClientSchema,
       }
     ])
+  ],
+  exports: [
+    MongooseModule
   ]
 })
 export class ClientsModule { }
