@@ -1,26 +1,66 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { isValidObjectId, Model } from 'mongoose';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
+import { Client } from './entities/client.entity';
 
 @Injectable()
 export class ClientsService {
-  create(createClientDto: CreateClientDto) {
-    return 'This action adds a new client';
+
+  constructor(
+    @InjectModel(Client.name)
+    private readonly clientModel: Model<Client>
+  ) { }
+
+  async create(createClientDto: CreateClientDto) {
+
+    try {
+
+      return await this.clientModel.create(createClientDto)
+
+    } catch (error) {
+
+      if (error.code === 11000)
+        throw new BadRequestException(
+          `Client ticket identifier exists in db: ${createClientDto.ticket}`
+        )
+
+      throw new InternalServerErrorException();
+
+    }
   }
 
-  findAll() {
-    return `This action returns all clients`;
+  async findAll() {
+
+    const clients = this.clientModel.find()
+    const parseClients = (await clients).map((client: Client) => {
+      return {
+        _id: client._id,
+        ticket: client.ticket,
+        present: client.present,
+        firstName: client.firstName,
+        lastName: client.lastName
+      }
+    })
+    return parseClients
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} client`;
+  async findOne(id: string) {
+
+    let client: Client;
+
+    if (isValidObjectId(id)) {
+      client = await this.clientModel.findById(id)
+    }
+
+    if (!client) {
+      throw new NotFoundException(
+        `Client with id: ${id} not found`
+      )
+    }
+
+    return client
   }
 
-  update(id: number, updateClientDto: UpdateClientDto) {
-    return `This action updates a #${id} client`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} client`;
-  }
 }
