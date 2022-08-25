@@ -39,32 +39,27 @@ export class AuthService {
 
   async login(loginUserDto: LoginUserDto) {
 
-    try {
+    const { password, email } = loginUserDto
 
-      const { password, email } = loginUserDto
+    const user = await this.userRepository.findOne({
+      where: { email },
+      select: { email: true, password: true }
+    })
 
-      const user = await this.userRepository.findOne({
-        where: { email },
-        select: { email: true, password: true }
-      })
-
-      if (!user) {
-        throw new UnauthorizedException("Credentials not valid")
-      }
-
-      if (!bcrypt.compareSync(password, user.password)) {
-        throw new UnauthorizedException("Credentials not valid")
-      }
-
-      delete user.username
-      delete user.id
-      // TODO: Crear la token
-
-      return user
-
-    } catch (error) {
-      this.handleDBErrors(error)
+    if (!user) {
+      throw new UnauthorizedException("Credentials not valid")
     }
+
+    if (!bcrypt.compareSync(password, user.password)) {
+      throw new UnauthorizedException("Credentials not valid")
+    }
+
+    delete user.username
+    delete user.id
+    // TODO: Crear la token
+
+    return user
+
 
   }
 
