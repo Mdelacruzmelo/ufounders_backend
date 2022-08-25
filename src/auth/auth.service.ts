@@ -1,10 +1,9 @@
-import { BadRequestException, ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-
 import * as bcrypt from 'bcrypt'
 
-import { CreateUserDto } from './dto/create-user-dto';
+import { LoginUserDto, CreateUserDto } from './dto';
 import { User } from './entities/user.entity';
 
 @Injectable()
@@ -37,6 +36,38 @@ export class AuthService {
 
     }
   }
+
+  async login(loginUserDto: LoginUserDto) {
+
+    try {
+
+      const { password, email } = loginUserDto
+
+      const user = await this.userRepository.findOne({
+        where: { email },
+        select: { email: true, password: true }
+      })
+
+      if (!user) {
+        throw new UnauthorizedException("Credentials not valid")
+      }
+
+      if (!bcrypt.compareSync(password, user.password)) {
+        throw new UnauthorizedException("Credentials not valid")
+      }
+
+      delete user.username
+      delete user.id
+      // TODO: Crear la token
+
+      return user
+
+    } catch (error) {
+      this.handleDBErrors(error)
+    }
+
+  }
+
 
   private handleDBErrors(error: any): never {
     if (error.code === 11000) {
