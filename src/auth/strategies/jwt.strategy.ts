@@ -7,7 +7,6 @@ import { Repository } from "typeorm";
 import { User } from "../entities/user.entity";
 import { JwtPayload } from "../interfaces/jwt.payload.interface";
 
-
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
 
@@ -29,7 +28,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
         const user = await this.userRepository.findOneBy({ id: id })
 
-        // This validation runs on AuthGuards()
+        // This validation runs on AuthGuards() because of the passport strategy
         if (!user) throw new UnauthorizedException("Token not valid")
 
         return user;

@@ -67,6 +67,10 @@ export class AuthService {
       throw new UnauthorizedException("Credentials not valid")
     }
 
+    delete user._id // not necessary for localstorage
+    delete user.password // not necessary for localstorage
+    delete user.roles // not necessary for localstorage
+
     return {
       user,
       token: this.getJwtToken({ id: user.id })
