@@ -43,8 +43,9 @@ export class ClientsService {
         firstName: 1
       })
 
+    const count = await this.clientModel.countDocuments();
 
-    const parseClients = (await clients).map((client: Client) => {
+    const parsedClients = (await clients).map((client: Client) => {
       return {
         _id: client._id,
         ticket: client.ticket,
@@ -53,7 +54,7 @@ export class ClientsService {
         lastName: client.lastName
       }
     })
-    return parseClients
+    return { total: count, list: parsedClients }
   }
 
   async findOne(id: string) {
