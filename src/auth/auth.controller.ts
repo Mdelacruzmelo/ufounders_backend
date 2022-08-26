@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { LoginUserDto, CreateUserDto } from './dto';
 
@@ -16,5 +17,13 @@ export class AuthController {
     return this.authService.login(loginUserDto);
   }
 
+  @Get('private')
+  @UseGuards(AuthGuard())
+  privateRoute() {
+    return {
+      ok: true,
+      message: 'logueado'
+    }
+  }
 
 }

@@ -1,13 +1,13 @@
-import { Column, Entity, ObjectIdColumn, PrimaryGeneratedColumn } from "typeorm";
-
-import { ObjectID } from 'mongodb'
-
+import { Column, Entity, ObjectIdColumn, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('users')
 export class User {
 
     @ObjectIdColumn()
-    id: ObjectID;
+    _id: string;
+
+    @PrimaryColumn()
+    id: string; // TypeORM needs this for mongo to differenciate from _id
 
     @Column()
     username: string;

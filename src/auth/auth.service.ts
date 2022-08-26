@@ -1,4 +1,9 @@
-import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt'
@@ -24,7 +29,8 @@ export class AuthService {
     try {
 
       const { password } = createUserDto
-      const user = this.userRepository.create({
+
+      const user = await this.userRepository.create({
         ...createUserDto,
         password: bcrypt.hashSync(password, 10)
       })
@@ -34,12 +40,11 @@ export class AuthService {
 
       return {
         user,
-        token: this.getJwtToken({ email: user.email })
+        token: this.getJwtToken({ id: user.id })
       }
 
     } catch (error) {
 
-      console.log('~ error', error)
       this.handleDBErrors(error)
 
     }
@@ -62,15 +67,10 @@ export class AuthService {
       throw new UnauthorizedException("Credentials not valid")
     }
 
-    delete user.username
-    delete user.id
-    // TODO: Crear la token
-
     return {
       user,
-      token: this.getJwtToken({ email: user.email })
+      token: this.getJwtToken({ id: user.id })
     }
-
 
   }
 
