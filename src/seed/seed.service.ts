@@ -31,7 +31,7 @@ export class SeedService {
     // Insert multiple clients
     await this.clientModel.insertMany(data)
 
-    return `Database reinitialized successfully`
+    return { message: `Database reinitialized successfully` }
 
   }
 
