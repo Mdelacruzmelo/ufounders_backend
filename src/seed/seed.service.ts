@@ -31,7 +31,27 @@ export class SeedService {
     // Insert multiple clients
     await this.clientModel.insertMany(data)
 
-    return { message: `Database reinitialized successfully` }
+    // Search for the first 12
+    const clients = await this.clientModel
+      .find()
+      .limit(30)
+      .skip(0)
+      .sort({
+        firstName: 1
+      })
+
+    const count = await this.clientModel.countDocuments();
+
+    const parsedClients = (await clients).map((client: Client) => {
+      return {
+        _id: client._id,
+        ticket: client.ticket,
+        present: client.present,
+        firstName: client.firstName,
+        lastName: client.lastName
+      }
+    })
+    return { total: count, list: parsedClients }
 
   }
 
@@ -40,7 +60,7 @@ export class SeedService {
     // Clean table after i get the data
     await this.clientModel.deleteMany()
 
-    return `Database truncated successfully`
+    return { total: 0, list: [] }
   }
 
 }

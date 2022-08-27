@@ -35,7 +35,7 @@ export class ClientsService {
   async findAll(paginationDto: PaginationDto) {
 
     const { limit = 10, offset = 0 } = paginationDto
-    const clients = this.clientModel
+    const clients = await this.clientModel
       .find()
       .limit(limit)
       .skip(offset)
