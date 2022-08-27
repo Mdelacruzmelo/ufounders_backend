@@ -1,4 +1,6 @@
-import { Controller, Get, Post, HttpCode, HttpStatus, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, HttpCode, HttpStatus, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { ClientsService } from './clients.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
@@ -14,8 +16,11 @@ export class ClientsController {
   }
 
   @Get()
-  findAll() {
-    return this.clientsService.findAll();
+  @UseGuards(AuthGuard())
+  findAll(
+    @Query() paginationDto: PaginationDto
+  ) {
+    return this.clientsService.findAll(paginationDto);
   }
 
   @Get(':id')

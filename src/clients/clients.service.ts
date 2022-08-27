@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { isValidObjectId, Model } from 'mongoose';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { Client } from './entities/client.entity';
@@ -31,10 +32,20 @@ export class ClientsService {
     }
   }
 
-  async findAll() {
+  async findAll(paginationDto: PaginationDto) {
 
-    const clients = this.clientModel.find()
-    const parseClients = (await clients).map((client: Client) => {
+    const { limit = 10, offset = 0 } = paginationDto
+    const clients = await this.clientModel
+      .find()
+      .limit(limit)
+      .skip(offset)
+      .sort({
+        firstName: 1
+      })
+
+    const count = await this.clientModel.countDocuments();
+
+    const parsedClients = (await clients).map((client: Client) => {
       return {
         _id: client._id,
         ticket: client.ticket,
@@ -43,7 +54,7 @@ export class ClientsService {
         lastName: client.lastName
       }
     })
-    return parseClients
+    return { total: count, list: parsedClients }
   }
 
   async findOne(id: string) {
