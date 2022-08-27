@@ -16,10 +16,10 @@ import { JoiValidationSchema } from './config/joi.validation';
       validationSchema: JoiValidationSchema
     }),
     ClientsModule,
-    MongooseModule.forRoot(process.env.MONGODB_CONNECTION_STRING_LOCAL),
+    MongooseModule.forRoot(process.env.MONGODB),
     TypeOrmModule.forRoot({
       type: 'mongodb',
-      url: process.env.MONGODB_CONNECTION_STRING_LOCAL,
+      url: process.env.MONGODB,
       database: process.env.MONGODB_DATABASE,
       useUnifiedTopology: true,
       autoLoadEntities: true,
